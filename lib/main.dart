@@ -50,7 +50,20 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   double _localHeight = 400;
-  int totalItemShouldBeRender = 0;
+  List<String> defaultList = [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10'
+  ];
+  late int totalItemShouldBeRender;
+  late List<String> list = [];
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
@@ -58,6 +71,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    totalItemShouldBeRender = defaultList.length;
+    list = [...defaultList];
     itemPositionsListener.itemPositions.addListener(() {
       var max = itemPositionsListener.itemPositions.value
           .toList()
@@ -66,10 +81,11 @@ class _MyHomePageState extends State<MyHomePage> {
               position.itemLeadingEdge > max.itemLeadingEdge ? position : max)
           .index;
 
-      if (max == totalItemShouldBeRender) return;
+      if (max + 1 == list.length) return;
 
       setState(() {
-        totalItemShouldBeRender = max;
+        // list = defaultList.sublist(0, max + 1);
+        totalItemShouldBeRender = max + 1;
       });
     });
   }
@@ -85,12 +101,14 @@ class _MyHomePageState extends State<MyHomePage> {
           Container(
             height: _localHeight,
             child: ScrollablePositionedList.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 10,
+              addAutomaticKeepAlives: false,
+              // physics: const NeverScrollableScrollPhysics(),
+              itemCount: defaultList.length + 10,
               itemBuilder: (context, index) {
                 return Container(
+                  key: ValueKey('stick-${list.length}'),
                   height: 40,
-                  child: Text('$index + $totalItemShouldBeRender'),
+                  child: Text('$index + ${list.length}'),
                 );
               },
               itemScrollController: itemScrollController,
